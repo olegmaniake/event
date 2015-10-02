@@ -1,0 +1,90 @@
+<?php
+/**
+ * Implements hook_schema().
+ */
+function event_schema(){
+  $schema['event'] = array(
+    'description' => 'The table of events.',
+    'fields' => array(
+      'eid' => array(
+        'description' => 'The primary identifier for event.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'description' => 'The human-readable name of event.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'description' => array(
+        'description' => 'The description of event.',
+        'type' => 'text',
+        'length' => 1000,
+      ),
+    ),
+    'index' => array(
+      'name' => array('name'),
+    ),
+    'primary key' => array('eid'),
+  );
+  $schema['event_people'] = array(
+    'description' => 'The table of people what registered on event.',
+    'fields' => array(
+      'pid' => array(
+        'description' => 'The primary identifier for event.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'description' => 'The name of human.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'surname' => array(
+        'description' => 'The surname of human.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'eid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The ID of event.',
+      ),
+      'number' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The number of tickets.',
+      ),
+    ),
+    'indexes' => array(
+      'eid' => array('eid'),
+    ),
+    'primary key' => array('pid'),
+  );
+  return $schema;
+}
+
+/**
+ *Implements hook_install().
+ */
+function event_install(){
+  /*
+   *This is test event.
+   */
+  db_insert('event')
+    ->fields(array(
+      'name' => 'Test event.',
+      'description' => 'This is test event.'
+    ))
+    ->execute();
+}

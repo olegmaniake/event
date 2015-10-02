@@ -1,0 +1,4 @@
+name = Event
+description = The module for registration tickets on event.
+package = Event
+core = 7.x
