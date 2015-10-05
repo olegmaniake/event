@@ -48,7 +48,7 @@ function event_add_form($form, &$form_state){
       '#default_value' => '',
       '#description' => t('The human name of this event.'),
       '#required' =>TRUE,
-      '#sieze' =>255,
+      '#size' =>255,
     );
     $form['description'] = array(
       '#type' => 'text_format',
@@ -80,9 +80,12 @@ function event_add_form_submit($form,&$form_state){
     'description' => $value['description']['value'],
   );
   drupal_write_record ('event', $record);
-  $return = $record ['eid'];
+  $arg = $record ['eid'];
 
-  $form_state['redirect'] = 'event/' . $return;
+  module_invoke_all('event_create',$arg);
+  drupal_alter('event_create',$arg);
+
+  $form_state['redirect'] = event_event_create($arg);
 }
 
 function event_registered_form($form, &$form_state){
@@ -92,7 +95,7 @@ function event_registered_form($form, &$form_state){
     '#default_value' => '',
     '#description' => t('The human name of this event.'),
     '#required' =>TRUE,
-    '#sieze' =>255,
+    '#size' =>255,
   );
   $form['surname'] = array(
     '#title' => t('Surname'),
@@ -100,7 +103,7 @@ function event_registered_form($form, &$form_state){
     '#default_value' => '',
     '#description' => t('The human name of this event.'),
     '#required' =>TRUE,
-    '#sieze' =>255,
+    '#size' =>255,
   );
   $form['event'] = array(
     '#type' => 'select',
@@ -113,7 +116,7 @@ function event_registered_form($form, &$form_state){
     '#default_value' => '',
     '#description' => t('The number of tickets.'),
     '#required' =>TRUE,
-    '#sieze' =>10,
+    '#size' =>10,
   );
   $form['event']['#options'] = event_list();
 
@@ -157,7 +160,9 @@ function event_registered_form_submit(&$form,&$form_state){
   drupal_write_record ('event_people', $record);
   $return = $record ['eid'];
 
-  $form_state['redirect'] = 'event/' . $return . "/registered";
+  module_invoke_all('event_registered',$return);
+
+  $form_state['redirect'] = event_event_registered($return);
 }
 function event_theme (){
  $return = array(
@@ -211,3 +216,26 @@ function event_show_registered($event){
       )
   );
 }
+
+/**
+ * Implements hook_event_create().
+ */
+function event_event_create($arg) {
+  return $return = 'event/' . $arg;
+}
+
+/**
+ * Implements hook_event_create().
+ */
+function event_event_create_alter(&$arg) {
+  $arg['description'] = 'my_hook_event_alter_work';
+}
+
+/**
+ * Implements hook_event_registered().
+ */
+function event_event_registered($arg) {
+  return $return = 'event/' . $arg . "/registered";
+}
+
+
