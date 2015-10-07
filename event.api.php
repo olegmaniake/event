@@ -1,13 +1,13 @@
 <?php
 
-function hook_event_create($arg){
+function hook_event_create(){
 
 }
 
-function hook_event_create_alter($arg){
+function hook_event_create_alter(){
 
 }
 
-function hook_event_registered($return){
+function hook_event_registered(){
 
 }

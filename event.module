@@ -227,9 +227,6 @@ function event_event_create($arg) {
 /**
  * Implements hook_event_create().
  */
-function event_event_create_alter(&$arg) {
-  $arg['description'] = 'my_hook_event_alter_work';
-}
 
 /**
  * Implements hook_event_registered().
