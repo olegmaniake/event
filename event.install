@@ -2,7 +2,7 @@
 /**
  * Implements hook_schema().
  */
-function event_schema(){
+function event_schema() {
   $schema['event'] = array(
     'description' => 'The table of events.',
     'fields' => array(
@@ -77,7 +77,7 @@ function event_schema(){
 /**
  *Implements hook_install().
  */
-function event_install(){
+function event_install() {
   /*
    *This is test event.
    */

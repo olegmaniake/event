@@ -4,12 +4,12 @@
 /**
  *Implements hook_menu().
  */
-function event_menu(){
+function event_menu() {
   $menu['create-event'] = array(
     'title' => 'Add a new event',
     'description' => 'Add a new event',
     'page callback' => 'drupal_get_form',
-    'page arguments' =>array('event_add_form'),
+    'page arguments' => array('event_add_form'),
     'access arguments' => array('user_is_logged_in'),
     'type' => MENU_NORMAL_ITEM,
   );
@@ -17,7 +17,7 @@ function event_menu(){
     'title' => 'Registered on event.',
     'description' => 'Registered on event.',
     'page callback' => 'drupal_get_form',
-    'page arguments' =>array('event_registered_form'),
+    'page arguments' => array('event_registered_form'),
     'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
   );
@@ -25,7 +25,7 @@ function event_menu(){
     'title' => 'Add a new event',
     'description' => 'Add a new event',
     'page callback' => 'event_show',
-    'page arguments' =>array(1),
+    'page arguments' => array(1),
     'type' => MENU_NORMAL_ITEM,
     'access callback' => TRUE,
   );
@@ -33,7 +33,7 @@ function event_menu(){
     'title' => 'Registered Page',
     'description' => 'Registered page',
     'page callback' => 'event_show_registered',
-    'page arguments' =>array(1),
+    'page arguments' => array(1),
     'type' => MENU_NORMAL_ITEM,
     'access callback' => TRUE,
   );
@@ -41,69 +41,70 @@ function event_menu(){
   return $menu;
 }
 
-function event_add_form($form, &$form_state){
-    $form['name'] = array(
-      '#title' => t('event'),
-      '#type' => 'textfield',
-      '#default_value' => '',
-      '#description' => t('The human name of this event.'),
-      '#required' =>TRUE,
-      '#size' =>255,
-    );
-    $form['description'] = array(
-      '#type' => 'text_format',
-      '#title' => t('Descrption of event.'),
-      '#default_value' => '',
-    );
-    $form['submit'] = array(
-      '#type' => 'submit',
-      '#waigth' => 50,
-      '#value' => t('submit'),
-    );
-    $form['#validate'] =  array('event_add_form_validate');
-    $form['#submit'] =  array('event_add_form_submit');
+function event_add_form($form, &$form_state) {
+  $form['name'] = array(
+    '#title' => t('event'),
+    '#type' => 'textfield',
+    '#default_value' => '',
+    '#description' => t('The human name of this event.'),
+    '#required' => TRUE,
+    '#size' => 255,
+  );
+  $form['description'] = array(
+    '#type' => 'text_format',
+    '#title' => t('Descrption of event.'),
+    '#default_value' => '',
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#waigth' => 50,
+    '#value' => t('submit'),
+  );
+  $form['#validate'] = array('event_add_form_validate');
+  $form['#submit'] = array('event_add_form_submit');
   return $form;
 }
 
-function event_add_form_validate($form, &$form_state){
-  if ($form_state['values']['name'] == ''){
-    form_set_error ('name', t('Name can not be empty.'));
-  }elseif ($form_state['values']['description']['value'] == ''){
-    form_set_error ('description', t('Description can not be empty.'));
+function event_add_form_validate($form, &$form_state) {
+  if ($form_state['values']['name'] == '') {
+    form_set_error('name', t('Name can not be empty.'));
+  }
+  elseif ($form_state['values']['description']['value'] == '') {
+    form_set_error('description', t('Description can not be empty.'));
   }
 }
 
-function event_add_form_submit($form,&$form_state){
+function event_add_form_submit($form, &$form_state) {
   $value = $form_state['values'];
   $record = array(
     'name' => $value['name'],
     'description' => $value['description']['value'],
   );
-  drupal_write_record ('event', $record);
+  drupal_write_record('event', $record);
   $arg = $record ['eid'];
 
-  module_invoke_all('event_create',$arg);
-  drupal_alter('event_create',$arg);
+  module_invoke_all('event_create', $arg);
+  drupal_alter('event_create', $arg);
 
   $form_state['redirect'] = event_event_create($arg);
 }
 
-function event_registered_form($form, &$form_state){
+function event_registered_form($form, &$form_state) {
   $form['name'] = array(
     '#title' => t('Name'),
     '#type' => 'textfield',
     '#default_value' => '',
     '#description' => t('The human name of this event.'),
-    '#required' =>TRUE,
-    '#size' =>255,
+    '#required' => TRUE,
+    '#size' => 255,
   );
   $form['surname'] = array(
     '#title' => t('Surname'),
     '#type' => 'textfield',
     '#default_value' => '',
     '#description' => t('The human name of this event.'),
-    '#required' =>TRUE,
-    '#size' =>255,
+    '#required' => TRUE,
+    '#size' => 255,
   );
   $form['event'] = array(
     '#type' => 'select',
@@ -115,8 +116,8 @@ function event_registered_form($form, &$form_state){
     '#type' => 'textfield',
     '#default_value' => '',
     '#description' => t('The number of tickets.'),
-    '#required' =>TRUE,
-    '#size' =>10,
+    '#required' => TRUE,
+    '#size' => 10,
   );
   $form['event']['#options'] = event_list();
 
@@ -125,84 +126,88 @@ function event_registered_form($form, &$form_state){
     '#waigth' => 50,
     '#value' => t('submit'),
   );
-  $form['#validate'] =  array('event_registered_form_validate');
-  $form['#submit'] =  array('event_registered_form_submit');
+  $form['#validate'] = array('event_registered_form_validate');
+  $form['#submit'] = array('event_registered_form_submit');
   return $form;
 }
 
-function event_list(){
-  $result = db_select('event','e')
-    ->fields('e',array('eid','name'))
+function event_list() {
+  $result = db_select('event', 'e')
+    ->fields('e', array('eid', 'name'))
     ->execute()
     ->fetchAllKeyed();
   return $result;
 }
 
-function event_registered_form_validate(&$form, &$form_state){
-  if ($form_state['values']['name'] == ''){
+function event_registered_form_validate(&$form, &$form_state) {
+  if ($form_state['values']['name'] == '') {
     form_set_error('name', t('Name can not be empty.'));
   }
-  if ($form_state['values']['surname'] == ''){
+  if ($form_state['values']['surname'] == '') {
     form_set_error('surname', t('Surname can not be empty.'));
   }
-  if (!is_numeric($form_state['values']['number'])){
+  if (!is_numeric($form_state['values']['number'])) {
     form_set_error('number', t('namber must be number.'));
   }
 }
 
-function event_registered_form_submit(&$form,&$form_state){
+function event_registered_form_submit(&$form, &$form_state) {
   $value = $form_state['values'];
   $record = array(
     'name' => $value['name'],
     'surname' => $value['surname'],
     'eid' => $value['event'],
   );
-  drupal_write_record ('event_people', $record);
+  drupal_write_record('event_people', $record);
   $return = $record ['eid'];
 
-  module_invoke_all('event_registered',$return);
+  module_invoke_all('event_registered', $return);
 
   $form_state['redirect'] = event_event_registered($return);
 }
-function event_theme (){
- $return = array(
-   'event_data' => array(
-     'variables' => array(
-       'name' => NULL,
-       'description' => NULL,
-     ),
-     'template' => 'event',
-   ),
-   'event-registered' => array(
-    'variables' => array(
-      'event' => NULL,
-      'description' => NULL,
-      'name' => NULL,
-      'surname' => NULL,
-      'number' => NULL,
+
+function event_theme() {
+  $return = array(
+    'event_data' => array(
+      'variables' => array(
+        'name' => NULL,
+        'description' => NULL,
+      ),
+      'template' => 'event',
     ),
-    'template' => 'event-registered',
-  )
- );
+    'event-registered' => array(
+      'variables' => array(
+        'event' => NULL,
+        'description' => NULL,
+        'name' => NULL,
+        'surname' => NULL,
+        'number' => NULL,
+      ),
+      'template' => 'event-registered',
+    )
+  );
   return $return;
 }
 
-function event_show($event){
-  $values = db_select('event','e')
+function event_show($event) {
+  $values = db_select('event', 'e')
     ->fields('e')
     ->condition('eid', intval($event))
     ->execute()
     ->fetchAssoc();
-  return theme('event_data',array('name' => $values['name'], 'description' => $values['description']));
+  return theme('event_data', array(
+    'name' => $values['name'],
+    'description' => $values['description']
+  ));
 }
 
-function event_show_registered($event){
-  $values = db_select('event','e')
+function event_show_registered($event) {
+  $values = db_select('event', 'e')
     ->fields('e')
     ->condition('eid', intval($event))
     ->execute()
     ->fetchAssoc();
-  $value_user = db_select('event_people','e')
+  $value_user = db_select('event_people', 'e')
     ->fields('e')
     ->condition('eid', intval($event))
     ->execute()
@@ -213,7 +218,7 @@ function event_show_registered($event){
       'name' => $value_user['name'],
       'surname' => $value_user['surname'],
       'number' => $value_user['number'],
-      )
+    )
   );
 }
 
