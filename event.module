@@ -1,8 +1,10 @@
 <?php
 /**
  * @file
- * The module for registeresd of event and registered new event
+ * The module for registeration of event and registeration new event.
  */
+
+
 /**
  *Implements hook_menu().
  */
