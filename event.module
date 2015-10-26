@@ -290,7 +290,7 @@ function event_block_view($delta = '') {
 
       $blocks['content'] = array(
         '#theme' => 'event_registered',
-        'title' => 'test_block2'
+        '#title' => 'test_block2'
       );
   }
 
@@ -308,7 +308,7 @@ function theme_event_data($value){
 }
 
 function theme_event_registered($value){
-  $output = '<div>';
+  $output = '<div class="custom-template-wrapper">';
   $output .= 'You';
   $output .= $value['name'];
   $output .= " ";
