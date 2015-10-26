@@ -4,6 +4,7 @@
  *Implements hook_menu().
  */
 function event_menu(){
+
   $menu['create-event'] = array(
     'title' => 'Add a new event',
     'description' => 'Add a new event',
@@ -12,6 +13,7 @@ function event_menu(){
     'access arguments' => array('user_is_logged_in'),
     'type' => MENU_NORMAL_ITEM,
   );
+
   $menu['registered'] = array(
     'title' => 'Registered on event.',
     'description' => 'Registered on event.',
@@ -20,6 +22,7 @@ function event_menu(){
     'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
   );
+
   $menu['event/%'] = array(
     'title' => 'Add a new event',
     'description' => 'Add a new event',
@@ -28,6 +31,7 @@ function event_menu(){
     'type' => MENU_NORMAL_ITEM,
     'access callback' => TRUE,
   );
+
   $menu['event/%/registered'] = array(
     'title' => 'Registered Page',
     'description' => 'Registered page',
@@ -40,7 +44,14 @@ function event_menu(){
   return $menu;
 }
 
+/**
+ * Form for add new event.
+ * @param $form
+ * @param $form_state
+ * @return mixed
+ */
 function event_add_form($form, &$form_state) {
+
   $form['name'] = array(
     '#title' => t('event'),
     '#type' => 'textfield',
@@ -49,22 +60,31 @@ function event_add_form($form, &$form_state) {
     '#required' => TRUE,
     '#size' => 255,
   );
+
   $form['description'] = array(
     '#type' => 'text_format',
     '#title' => t('Descrption of event.'),
     '#default_value' => '',
   );
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#waigth' => 50,
     '#value' => t('submit'),
   );
+
   $form['#validate'] = array('event_add_form_validate');
+
   $form['#submit'] = array('event_add_form_submit');
 
   return $form;
 }
 
+/**
+ * Function for validate values of form_add_event
+ * @param $form
+ * @param $form_state
+ */
 function event_add_form_validate($form, &$form_state) {
   if ($form_state['values']['name'] == '') {
     form_set_error('name', t('Name can not be empty.'));
@@ -86,7 +106,7 @@ function event_add_form_submit($form, &$form_state) {
   module_invoke_all('event_create', $arg);
   drupal_alter('event_create', $arg);
 
-  $form_state['redirect'] = event_event_create($arg);
+  $form_state['redirect'] = 'event/' . $arg;
 }
 
 function event_registered_form($form, &$form_state) {
@@ -98,6 +118,7 @@ function event_registered_form($form, &$form_state) {
     '#required' => TRUE,
     '#size' => 255,
   );
+
   $form['surname'] = array(
     '#title' => t('Surname'),
     '#type' => 'textfield',
@@ -106,11 +127,13 @@ function event_registered_form($form, &$form_state) {
     '#required' => TRUE,
     '#size' => 255,
   );
+
   $form['event'] = array(
     '#type' => 'select',
     '#title' => t('Select event.'),
     '#description' => t('selection event.'),
   );
+
   $form['number'] = array(
     '#title' => t('number of tickets.'),
     '#type' => 'textfield',
@@ -119,6 +142,7 @@ function event_registered_form($form, &$form_state) {
     '#required' => TRUE,
     '#size' => 10,
   );
+
   $form['event']['#options'] = event_list();
 
   $form['submit'] = array(
@@ -165,7 +189,7 @@ function event_registered_form_submit(&$form, &$form_state) {
 
   module_invoke_all('event_registered', $return);
 
-  $form_state['redirect'] = event_event_registered($return);
+  $form_state['redirect'] = 'event/' . $return . "/registered";
 }
 
 function event_theme() {
@@ -175,8 +199,8 @@ function event_theme() {
         'name' => NULL,
         'description' => NULL,
       ),
-      'template' => 'event',
     ),
+
     'event-registered' => array(
       'variables' => array(
         'event' => NULL,
@@ -185,7 +209,6 @@ function event_theme() {
         'surname' => NULL,
         'number' => NULL,
       ),
-      'template' => 'event-registered',
     )
   );
 
@@ -211,6 +234,7 @@ function event_show_registered($event) {
     ->condition('eid', intval($event))
     ->execute()
     ->fetchAssoc();
+
   $value_user = db_select('event_people', 'e')
     ->fields('e')
     ->condition('eid', intval($event))
@@ -228,17 +252,75 @@ function event_show_registered($event) {
 }
 
 /**
- * Implements hook_event_create().
+ * Implements hook_block_info().
  */
-function event_event_create($arg) {
-  return $return = 'event/' . $arg;
+function event_block_info() {
+  $bloks['event_data_block'] = array(
+    'info' => t('Event data'),
+    'status' => TRUE,
+    'region' => 'content',
+  );
+
+  $bloks['event_registered_block'] = array(
+    'info' => t('Event registered'),
+    'status' => TRUE,
+    'cache' => DRUPAL_NO_CACHE,
+    'region' => 'sidebar_first',
+  );
+
+  return $bloks;
 }
 
 /**
- * Implements hook_event_registered().
+ * Implements hook_block_view().
  */
-function event_event_registered($arg) {
-  return $return = 'event/' . $arg . "/registered";
+function event_block_view($delta = '') {
+  switch ($delta) {
+    case 'event_data_block':
+      $blocks['subject'] = t('Event data');
+
+      $blocks['content'] = array(
+        '#theme' => 'event_data',
+        '#title' => 'test_block',
+      );
+      break;
+
+    case 'event_registered_block':
+      $blocks['subject'] = t('Event registered');
+
+      $blocks['content'] = array(
+        '#theme' => 'event_registered',
+        'title' => 'test_block2'
+      );
+  }
+
+  return $blocks;
 }
+
+function theme_event_data($value){
+  $output = '<div class="event-wraper">';
+  $output .= $value['name'];
+  $output .= " - " ;
+  $output .= $value['description'];
+  $output .= '</div>';
+
+  return $output;
+}
+
+function theme_event_registered($value){
+  $output = '<div>';
+  $output .= 'You';
+  $output .= $value['name'];
+  $output .= " ";
+  $output .= $value['surname'];
+  $output .= " registred on ";
+  $output .= $value['event'];
+  $output .= " - ";
+  $output .= $value['description'];
+  $output .= '</div>';
+
+  return $output;
+}
+
 
 
