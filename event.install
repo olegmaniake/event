@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * @file install database for this module.
+ * Create table event and event_people.
+ * Create test event as an example.
+ */
+
+/**
  * Implements hook_schema().
  */
 function event_schema() {

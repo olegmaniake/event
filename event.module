@@ -1,9 +1,12 @@
 <?php
-
+/**
+ * @file
+ * The module for registeresd of event and registered new event
+ */
 /**
  *Implements hook_menu().
  */
-function event_menu(){
+function event_menu() {
 
   $menu['create-event'] = array(
     'title' => 'Add a new event',
@@ -200,7 +203,6 @@ function event_theme() {
         'description' => NULL,
       ),
     ),
-
     'event-registered' => array(
       'variables' => array(
         'event' => NULL,
@@ -297,17 +299,17 @@ function event_block_view($delta = '') {
   return $blocks;
 }
 
-function theme_event_data($value){
+function theme_event_data($value) {
   $output = '<div class="event-wraper">';
   $output .= $value['name'];
-  $output .= " - " ;
+  $output .= " - ";
   $output .= $value['description'];
   $output .= '</div>';
 
   return $output;
 }
 
-function theme_event_registered($value){
+function theme_event_registered($value) {
   $output = '<div class="custom-template-wrapper">';
   $output .= 'You';
   $output .= $value['name'];
